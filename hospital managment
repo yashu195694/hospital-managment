@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* App Container */
+        .app-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            min-height: 90vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: #3498db;
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            background: #ecf0f1;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .nav-tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #7f8c8d;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-tab:hover {
+            background: #d5dbdb;
+            color: #2c3e50;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #3498db;
+        }
+
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #3498db;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-left: 4px solid #3498db;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.patients { background: #e74c3c; }
+        .stat-icon.doctors { background: #3498db; }
+        .stat-icon.appointments { background: #2ecc71; }
+        .stat-icon.pending { background: #f39c12; }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-info p {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        /* Action UI */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-primary { background: #3498db; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+
+        /* Form & Table Styles */
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 0.75rem; border: 2px solid #ecf0f1; border-radius: 8px;
+        }
+
+        .data-table {
+            width: 100%; border-collapse: collapse; margin-top: 1rem;
+        }
+
+        .data-table th { background: #34495e; color: white; padding: 1rem; text-align: left; }
+        .data-table td { padding: 1rem; border-bottom: 1px solid #ecf0f1; }
+
+        /* Notification */
+        .notification {
+            position: fixed; top: 20px; right: 20px; padding: 1rem 1.5rem;
+            border-radius: 8px; color: white; z-index: 1000;
+            transform: translateX(400px); transition: transform 0.3s;
+        }
+        .notification.show { transform: translateX(0); }
+        .notification.success { background: #27ae60; }
+        
+        @media (max-width: 768px) {
+            .nav-tabs { flex-wrap: wrap; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-container">
+            <header class="header">
+                <div class="logo">
+                    <i class="fas fa-hospital-alt"></i>
+                    <div class="logo-text">
+                        <h1>MediCare Hospital</h1>
+                        <p>Complete Hospital Management System</p>
+                    </div>
+                </div>
+                <div id="currentTime"></div>
+            </header>
+
+            <nav class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('dashboard')">Dashboard</button>
+                <button class="nav-tab" onclick="showTab('patients')">Patients</button>
+                <button class="nav-tab" onclick="showTab('doctors')">Doctors</button>
+                <button class="nav-tab" onclick="showTab('appointments')">Appointments</button>
+                <button class="nav-tab" onclick="showTab('reports')">Reports</button>
+            </nav>
+
+            <main class="main-content">
+                <div id="dashboard" class="tab-content active">
+                    <div class="stats-grid">
+                        <div class="stat-card"><div class="stat-info"><h3 id="totalPatients">0</h3><p>Patients</p></div></div>
+                        <div class="stat-card"><div class="stat-info"><h3 id="totalDoctors">0</h3><p>Doctors</p></div></div>
+                        <div class="stat-card"><div class="stat-info"><h3 id="totalAppointments">0</h3><p>Today's Apps</p></div></div>
+                    </div>
+                    <div class="form-container">
+                        <h3>Recent Activity</h3>
+                        <div id="recentActivity"></div>
+                    </div>
+                </div>
+
+                <div id="patients" class="tab-content">
+                    <div class="form-header">
+                        <h2>Patient Management</h2>
+                        <button class="btn btn-primary" onclick="showPatientForm()">Add Patient</button>
+                    </div>
+                    <div id="patientForm" class="form-container" style="display: none;">
+                        <form id="patientFormElement">
+                            <div class="form-group"><label>Name *</label><input type="text" id="patientName" required></div>
+                            <div class="form-group"><label>Age *</label><input type="number" id="patientAge" required></div>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn btn-danger" onclick="hidePatientForm()">Cancel</button>
+                        </form>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Actions</th></tr></thead>
+                        <tbody id="patientsTable"></tbody>
+                    </table>
+                </div>
+
+                </main>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        class HospitalManagementSystem {
+            constructor() {
+                this.data = {
+                    patients: JSON.parse(localStorage.getItem('patients')) || [],
+                    doctors: JSON.parse(localStorage.getItem('doctors')) || [
+                        { id: 1, name: "Dr. Sarah Johnson", specialization: "Cardiology", fee: 200 }
+                    ],
+                    appointments: JSON.parse(localStorage.getItem('appointments')) || [],
+                    nextPatientId: parseInt(localStorage.getItem('nextPatientId')) || 1
+                };
+                this.init();
+            }
+
+            init() {
+                this.updateDashboard();
+                this.loadPatientsTable();
+                this.startClock();
+            }
+
+            save() {
+                localStorage.setItem('patients', JSON.stringify(this.data.patients));
+                localStorage.setItem('nextPatientId', this.data.nextPatientId.toString());
+            }
+
+            addPatient(data) {
+                const patient = { id: this.data.nextPatientId++, registrationDate: new Date(), ...data };
+                this.data.patients.push(patient);
+                this.save();
+                this.loadPatientsTable();
+                this.updateDashboard();
+                this.notify('Patient Added!');
+            }
+
+            loadPatientsTable() {
+                const tbody = document.getElementById('patientsTable');
+                tbody.innerHTML = this.data.patients.map(p => `
+                    <tr>
+                        <td>${p.id}</td>
+                        <td>${p.name}</td>
+                        <td>${p.age}</td>
+                        <td><button class="btn btn-danger" onclick="hospitalSystem.deletePatient(${p.id})">Delete</button></td>
+                    </tr>
+                `).join('');
+            }
+
+            deletePatient(id) {
+                this.data.patients = this.data.patients.filter(p => p.id !== id);
+                this.save();
+                this.loadPatientsTable();
+                this.updateDashboard();
+            }
+
+            updateDashboard() {
+                document.getElementById('totalPatients').textContent = this.data.patients.length;
+                document.getElementById('totalDoctors').textContent = this.data.doctors.length;
+            }
+
+            notify(msg) {
+                const n = document.getElementById('notification');
+                n.textContent = msg;
+                n.className = 'notification success show';
+                setTimeout(() => n.classList.remove('show'), 3000);
+            }
+
+            startClock() {
+                setInterval(() => {
+                    document.getElementById('currentTime').textContent = new Date().toLocaleString();
+                }, 1000);
+            }
+        }
+
+        const hospitalSystem = new HospitalManagementSystem();
+
+        function showTab(name) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(name).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showPatientForm() { document.getElementById('patientForm').style.display = 'block'; }
+        function hidePatientForm() { document.getElementById('patientForm').style.display = 'none'; }
+
+        document.getElementById('patientFormElement').addEventListener('submit', e => {
+            e.preventDefault();
+            hospitalSystem.addPatient({
+                name: document.getElementById('patientName').value,
+                age: document.getElementById('patientAge').value
+            });
+            hidePatientForm();
+        });
+    </script>
+</body>
+</html>
